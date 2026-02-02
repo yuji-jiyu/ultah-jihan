@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
 app = Flask(__name__)
-app.secret_key = "ultahjihanrahasia"  # bebas, tapi jangan kasih tau orang
+app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")  # bebas, tapi jangan kasih tau orang
 app.config["SESSION_TYPE"] = "filesystem"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -76,6 +76,10 @@ def page4():
         pesan = request.form.get("pesan")
         with open(file_path, "a", encoding="utf-8") as file:
             file.write(pesan + "\n\n")
+    if not os.path.exists(file_path):
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write("")
+
 
         return redirect(url_for("penutup"))
 
