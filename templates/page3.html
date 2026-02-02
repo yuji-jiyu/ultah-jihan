@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Untuk Jihan ❤️</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .box {
+            background: rgba(0,0,0,0.3);
+            padding: 40px;
+            border-radius: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: scale(0.8);}
+            to {opacity: 1; transform: scale(1);}
+        }
+        .secret-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        background: white;
+        color: #ff758c;
+        font-weight: bold;
+        }
+
+        .extra-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .extra-text {
+            font-style: italic;
+            font-size: 15px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>yusuf bersyukur jihan lahir ke dunia ini 💖</h1>
+        <p>Semoga semua hal baik selalu datang ke hidup jihann.</p>
+        <p>Dan semoga yusuff boleh tetap ada di samping jihann 🤍</p>
+        <h2>— Dari seseorang yang sayangg bgtt samaa jihann 🌷</h2>
+
+    <button onclick="tampilPesan()" class="secret-btn">
+    Buka Pesan Rahasia 💌
+</button>
+<div id="pesanRahasia" class="extra-box" style="display: none;">
+    <p class="extra-text">
+        Dari sekian banyak hari yang yusuf lewati,<br>
+        ketemu jihan tuu salah satu hari yang paling indah buat yusuf 🤍..<br>
+        dan hari hari setelah ketemu jihan pun adalah hari hari yang lebih indah ketimbang sebelum ketemu jihan... <br>
+        dan yusuf juga berharap hari hari jihan setelah ketemu yusuf juga lebih indah ketimbang sebelum ketemu yusuf
+    </p>
+</div>
+
+
+        <a href="/gallery">
+    <button style="margin-top:20px; padding:10px 20px; border:none; border-radius:20px; font-size:14px; cursor:pointer; background:white; color:#ff758c; font-weight:bold;">
+        tomboll untuk selanjuttnyaa yawww 💌
+    </button>
+</a>
+    </div>
+    <script>
+function tampilPesan() {
+    var box = document.getElementById("pesanRahasia");
+    box.style.display = "block";
+}
+</script>
+
+</body>
+</html>

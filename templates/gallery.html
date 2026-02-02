@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Perjalanan Kita 🤍</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom, #fff1eb, #ace0f9);
+            background-attachment: fixed; /* 🔥 bikin background parallax */
+            background-size: cover;
+            color: #333;
+        }
+
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: auto;
+            padding: 40px 0;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .timeline-item {
+            margin-bottom: 60px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .timeline-item img {
+            width: 100%;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .date {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .message {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .next-btn {
+            display: block;
+            margin: 80px auto 60px;
+            padding: 14px 32px;
+            border-radius: 30px;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 50;
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.5);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(255, 182, 193, 0.7);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .media {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .caption {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 8px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+
+        .memory-wall {
+            column-count: 3;
+            column-gap: 18px;
+            margin-top: 40px;
+        }
+
+        .memory-wall img {
+            width: 100%;
+            margin-bottom: 18px;
+            border-radius: 15px;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9) rotate(-4deg);
+            transition: all 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+            cursor: pointer;
+        }
+
+        /* Variasi rotasi biar keliatan natural */
+        .memory-wall img:nth-child(2n) { transform: translateY(50px) scale(0.9) rotate(4deg); }
+        .memory-wall img:nth-child(3n) { transform: translateY(50px) scale(0.9) rotate(-6deg); }
+        .memory-wall img:nth-child(5n) { transform: translateY(50px) scale(0.9) rotate(6deg); }
+
+        /* Saat muncul */
+        .memory-wall img.show {
+            opacity: 1;
+            transform: translateY(0) scale(1) rotate(0deg);
+        }
+
+        /* Hover romantis */
+        .memory-wall img:hover {
+            transform: scale(1.07) rotate(0deg);
+            box-shadow: 0 12px 30px rgba(255, 182, 193, 0.45);
+        }
+
+        /* LIGHTBOX STYLE */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .lightbox-content {
+            display: block;
+            margin: auto;
+            max-width: 85%;
+            max-height: 80vh;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            animation: zoomIn 0.4s ease;
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 25px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .lightbox-caption {
+            text-align: center;
+            color: white;
+            margin-top: 15px;
+            font-size: 15px;
+            opacity: 0.85;
+        }
+
+        .nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            color: white;
+            padding: 10px 18px;
+            cursor: pointer;
+            user-select: none;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+        }
+
+        .prev { left: 30px; }
+        .next { right: 30px; }
+
+        .nav:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+
+        @keyframes zoomIn {
+            from {transform: scale(0.7); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
+
+
+
+        .polaroid-wall {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 10px 10px 25px 10px;
+            width: 180px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            transform: rotate(-3deg);
+            transition: transform 0.3s ease;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .polaroid:nth-child(even) {
+            transform: rotate(3deg);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0deg);
+        }
+
+        .polaroid img {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+
+        .chat-night {
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin-top: 60px;
+            color: white;
+        }
+
+        .chat-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .chat-bubble {
+            background: rgba(255,255,255,0.08);
+            padding: 12px 16px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            max-width: 90%;
+            width: fit-content;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 1s ease forwards;
+
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.6;
+            }
+
+
+
+
+        .chat-bubble.left {
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chat-night {
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin-top: 60px;
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Biar bubble rata kiri natural */
+        }
+
+
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .timeline-item img:hover,
+        .memory-wall img:hover,
+        .polaroid img:hover {
+            transform: scale(1.05) rotate(0deg);
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.5);
+        }
+
+        .focused {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(255, 182, 193, 0.35);
+            transition: all 0.4s ease;
+        }
+
+        .zoomable {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .zoomable:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 10px;
+        }
+
+        #closeBtn {
+            position: absolute;
+            top: 25px;
+            right: 40px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .chat-caption {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #eee;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            border: none;
+            padding: 12px 18px;
+            border-radius: 30px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 182, 193, 0.4);
+            z-index: 9999;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #music-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.6);
+        }
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="title">"about you"  🤍</h1>
+
+    <div class="timeline-item">
+        <div class="date">Awal Kita Kenal</div>
+        <img src="{{ url_for('static', filename='mpls.jpeg') }}">
+        <div class="message">
+            ini adalah awal pertemuan kita, awalnya kita memang tidak saling mengenal, waktu itu kita cuman 
+            2 orang yang tidak sengaja di abadikan oleh kamera osis di antara banyaknya barisan orang lain, 
+            hal yang tak disangka... kita besok nya 1 kelas yang dimana akan mengubah hidup yusuf 180 derajat, dan mungkin juga
+            hidup jihan??
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">moment kita pertama kali foto bareng</div>
+        <img src="{{ url_for('static', filename='pertamafotbar.jpeg') }}">
+        <div class="message">
+            yusuf suka banget sama foto ini, walaupun teman teman sering bilang "foto semeter"... yaa memang.. foto bareng semeter,
+            tapi rasanya kita sudah sedekat itu, dan itu cukup membanggakan untuk yusuf pribadi
+        </div>
+    </div>
+
+
+    <div class="timeline-item">
+        <div class="date">hari setelah randai</div>
+        <img src="{{ url_for('static', filename='fotbarrandai.jpeg') }}">
+        <div class="message">
+            ini foto kita setelah acara randai, waktu itu yusuf merasa diri yusuf gagal untuk menjadi seorang sutradara,
+            tapi untungnya ada jihan yang selalu membantu yusuf dengan menjadi asisten sutradara, dan tanpa sadar karna jihan juga
+            yusuf merasa lebih semangat untuk menjalaninya
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">hadiah</div>
+        <img src="{{ url_for('static', filename='ultahyusuf.jpeg') }}">
+        <div class="message">
+            dan ini... ini adalah 1 hari setelah hari randai, setelah acara randai yang melelahkan dan setelah diri yusuf merasa gagal...
+            jihan memberi hadiah ulang tahun ke yusuf, bagi yusuf itu bukan cuma hadiah ulang tahun, yusuf juga menganggap hadiah itu bentuk apresiasi
+            dari jihan setelah kita berusaha bersama sebelumnya...hehe alay bgt yaa
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">ingin bertemu</div>
+        <div class="message">
+            Mungkin nggak ada fotonya, tapi yusuf ingat hari hari yusuf setelah istirahat, yusuf selalu lewat di depan kelas jihan
+            berharap kita bertemu... dan lucu nya ketika kita sudah bertemu, yusuf malah malu untuk menyapa... dan sekarang yusuf tau
+            kalau jihan dulu juga seperti itu
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">olimpiade</div>
+        <img src="{{ url_for('static', filename='olim.jpeg') }}">
+        <div class="message">
+            jihan ingat waktu kita sering olimpiade tidak?... jujur ya jihan, sebenarnya alasan yusuf ikut olimpiade itu karna mau 
+            bertemu jihan, yusuf akui ini salah sih, dan yusuf  mungkin juga harus minta maaf ke guru guru yang udah mempercayakan yusuf untuk ikut olimpiade...
+            tapi, waktu olimpiade ini adalah waktu yusuf bisa ketemu jihan, bisa ngobrol sama jihan yaa walaupun dikit sih karna yusuf malu juga... buat yusuf
+            saat ketika belajar bersama untuk olimpiade, kita pergi bersama ke lokasi olimpiade, dan kita pulang dari olimpiade dengan wajah dan pikiran memelas 
+            karna susah nya soal soal... itu saat terindah saat yusuf masih di sma dulu
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">Hari Ini</div>
+        <img src="{{ url_for('static', filename='fotbartahfiz.jpeg') }}">
+        <div class="message">
+            ini waktu kita selesai acara wisuda tahfiz, yusuf senang banget waktu jihan minta foto bareng ke yusuf, 
+            tapi kenapa jihan minta nya lewat syfa trus ke muzzaki baru ke yusuf ya, kenapa tidak langsung ke yusuf aja🤔🤔🤔🤔
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">Hari Ini</div>
+        <img src="{{ url_for('static', filename='fotbarkelulusan.jpeg') }}">
+        <div class="message">
+            dan ini waktu kita fotbar kelulusan.. tau ngk jihan.. ini yusuf udh bener bener pasrah waktu
+            minta fotbar dan confes ke jihan.. yusuf kayak.. kalau jihan suka balik alhamdulillah, kalau ngk
+            galau😭😭😭😭... dan ternyata jihan juga suka balik, waktu tu yusuf senang bgt asli...
+            tapi setelah itu yusuf ngerasa bakalan lebih susah buat ketemu jihan lagi, karna itu moment terakhir kita
+            yang di pertemukan karna sekolah.. yusuf sedih waktu tu karna ngk bisa ketemu jihan sesering ketemu di sekolah
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">moment kita pertama kali foto bareng</div>
+        <img src="{{ url_for('static', filename='foto.jpeg') }}">
+        <div class="message">
+            dan ternyata kita bisa lebih akrab lagi setelah lulus.. dan jihan juga ternyata
+            jihan masih inget pemberian kecil yusuf yang yusuf aja hampir lupa.. makasiiii jihan😭😭😭😭
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">moment kita pertama kali foto bareng</div>
+        <img src="{{ url_for('static', filename='jihanmantel.jpeg') }}">
+        <div class="message">
+            dan bahkan mantel yang yusuf kasi ke jihan waktu sma masih jihan inget dan jihan jaga
+            bahkan sampai waktu jihan udah kuliah jugaaa😭😭😭😭
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="date">moment kita pertama kali foto bareng</div>
+        <img src="{{ url_for('static', filename='fotbarbadminton.jpeg') }}">
+        <div class="message">
+            inii fotbar kita waktu main badminton sama nabil dan rani, ehh ini fotbar pertama kitaa
+            setelah lulus sekolah yaaa... waktu tu jihan lagi kurang enak badan yaa    , maaf jihan masih harus
+            ikut main badminton padahal jihan lagi kurang enak badan
+        </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="timeline-item">
+    <div class="date">obat sedih</div>
+
+    <video class="media" controls>
+        <source src="{{ url_for('static', filename='videos/videojihan.mp4') }}" type="video/mp4">
+        Browser kamu tidak mendukung video.
+    </video>
+
+
+    <div class="message">
+        jihan bilang, kalau yusuf sedih lihat video ini aja.. semoga sedih yusuf bisa hilang karn liat video jihan...
+        hehee makasiii yawww
+        </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="timeline-item">
+    <div class="date">video tentang kita</div>
+
+    <video class="media" controls>
+        <source src="{{ url_for('static', filename='videos/videojihan2.mp4') }}" type="video/mp4">
+        Browser kamu tidak mendukung video.
+    </video>
+
+
+    <div class="message">
+        yusuf senang tiap kali jihan buat video tentang kita, tiap moment kita yang jihan buat video tentang itu, yusuf merasa di hargai
+        
+        </div>
+    </div>
+
+    <h2 style="text-align:center; margin-top:70px;">Kenangan yang Tersimpan 📸</h2>
+
+<div class="polaroid-wall">
+    <div class="polaroid">
+        <img src="{{ url_for('static', filename='chat1.jpeg') }}" class="zoomable">
+        <p>Chat yang bikin Yusuf senyum sendiri</p>
+    </div>
+
+    <div class="polaroid">
+        <img src="{{ url_for('static', filename='chat2.jpeg') }}" class="zoomable">
+        <p>Kata-kata yang Yusuf simpan</p>
+    </div>
+
+    <div class="polaroid">
+        <img src="{{ url_for('static', filename='chat3.jpeg') }}" class="zoomable">
+        <p>Bagian dari Jihan yang hangat</p>
+    </div>
+</div>
+
+
+
+<div class="chat-night">
+    <div class="chat-title">Hal yang Pernah Jihan Bilang 🤍</div>
+
+    <div class="chat-bubble left">Yusuff jihan mau yusuf tau, kalau jihan di suruh memilih, jihan pastiii pilih yusuff, karna jihan benar benar rasa nyaman smaa yusuf, conth nyaa kalau jihan cerita yusuff pastii jadi pendegar yang baikk</div>
+    <div class="chat-bubble left">Siappp untuk berpetualang dihatii jihan yusuff, kita harus carii apaa yang menutup nyaaa</div>
+    <div class="chat-bubble left">Iyaaaa, yusuff ceritaa ke jihan yaa, jadiin jihan rumah yusuff, tempat pulang yusuff kalau yusuff rasa lelah smaa duniaa, yusuff lagi bingung mau minta saran ke jihan yaa, jangann pendam sendirii yaa yusuff</div>
+    <div class="chat-bubble left">Yusuff kalau smaa jihan, ngk perlu pura pura kuatt yaaaa, kitaa smaa smaa manusia pasti ada rasa lelah</div>
+    <div class="chat-bubble left">Tapii ada yusuff, yang selau dengarin cerita jihann, walaupun aneh, tapi yusuf selalu respon nyaa excited jugaaaa🫶🏻</div>
+
+    <p class="chat-caption">
+    Setiap kata dari Jihan bukan cuma lewat… tapi tinggal, dan jadi tempat Yusuf pulang... yusuf ingin percaya
+    hal itu dengan tenang... walaupun yusuf tau, kadang ada hal yang belum sepenuhnya jujur. 
+    tapi yusuf tetap disini, karna yang yusuf rasakan ke jihan itu benar benar tulus dan nyata 🤍
+</p>
+
+    
+</div>
+
+
+
+    <p style="text-align:center; margin-top:40px; color:#555;">
+    Dan di antara semua cerita besar itu… ada banyak hal kecil yang mungkin sederhana,
+    tapi selalu bikin Yusuf senyum kalau inget Jihan 🤍
+</p>
+
+
+    <h2 style="text-align:center; margin-top:60px;">Semua Hal Kecil yang Aku Simpan 🤍</h2>
+
+    <div class="memory-wall">
+        <img src="{{ url_for('static', filename='pilihbaju.jpeg') }}">
+        <img src="{{ url_for('static', filename='fotojihan2.jpeg') }}">
+        <img src="{{ url_for('static', filename='jihanmetal.jpeg') }}">
+        <img src="{{ url_for('static', filename='jihanfilter.jpeg') }}">
+        <img src="{{ url_for('static', filename='jihanalmet.jpeg') }}">
+        <img src="{{ url_for('static', filename='jihankucing.jpeg') }}">
+        <img src="{{ url_for('static', filename='jihanlove.jpeg') }}">
+
+    </div>
+
+    <div id="lightbox" class="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <img class="lightbox-content" id="lightbox-img">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+
+    <div class="nav prev">&#10094;</div>
+    <div class="nav next">&#10095;</div>
+</div>
+
+
+<button class="next-btn" onclick="location.href='/page4'">Lanjut 🤍</button>
+
+
+
+<script>
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.innerHTML = "🤍";
+    heart.style.position = "fixed";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.top = "-20px";
+    heart.style.fontSize = (Math.random() * 10 + 15) + "px";
+    heart.style.opacity = 0.8;
+    heart.style.animation = "fall 6s linear forwards";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 6000);
+}
+
+setInterval(createHeart, 1200);
+</script>
+
+
+<script>
+const items = document.querySelectorAll('.timeline-item');
+const memoryImages = document.querySelectorAll('.memory-wall img');
+
+function handleScrollAnimation() {
+    const triggerBottom = window.innerHeight * 0.85;
+
+    items.forEach(item => {
+        const boxTop = item.getBoundingClientRect().top;
+        const boxBottom = item.getBoundingClientRect().bottom;
+
+        if (boxTop < triggerBottom && boxBottom > 0) {
+            item.classList.add('show');
+        } else {
+            item.classList.remove('show'); // 🔥 bikin animasi bisa ulang
+        }
+    });
+
+    memoryImages.forEach(img => {
+        const imgTop = img.getBoundingClientRect().top;
+        const imgBottom = img.getBoundingClientRect().bottom;
+
+        if (imgTop < window.innerHeight * 0.9 && imgBottom > 0) {
+            img.classList.add('show');
+        } else {
+            img.classList.remove('show'); // 🔥 bisa animasi lagi
+        }
+    });
+}
+
+window.addEventListener('scroll', handleScrollAnimation);
+window.addEventListener('load', handleScrollAnimation);
+</script>
+
+
+<script>
+const images = document.querySelectorAll(".memory-wall img, .polaroid img");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const captionText = document.getElementById("lightbox-caption");
+const closeBtn = document.querySelector(".close-lightbox");
+const nextBtn = document.querySelector(".next");
+const prevBtn = document.querySelector(".prev");
+
+let currentIndex = 0;
+const imgArray = Array.from(images);
+
+function showImage(index) {
+    const img = imgArray[index];
+    lightbox.style.display = "block";
+    lightboxImg.src = img.src;
+    captionText.textContent = img.alt || "";
+    currentIndex = index;
+}
+
+images.forEach((img, index) => {
+    img.addEventListener("click", () => showImage(index));
+});
+
+closeBtn.onclick = () => lightbox.style.display = "none";
+
+lightbox.onclick = (e) => {
+    if (e.target === lightbox) lightbox.style.display = "none";
+};
+
+nextBtn.onclick = (e) => {
+    e.stopPropagation();
+    currentIndex = (currentIndex + 1) % imgArray.length;
+    showImage(currentIndex);
+};
+
+prevBtn.onclick = (e) => {
+    e.stopPropagation();
+    currentIndex = (currentIndex - 1 + imgArray.length) % imgArray.length;
+    showImage(currentIndex);
+};
+</script>
+   
+
+<script>
+const focusItems = document.querySelectorAll('.timeline-item, .memory-wall img');
+
+function focusOnCenter() {
+    const center = window.innerHeight / 2;
+
+    focusItems.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        const itemCenter = rect.top + rect.height / 2;
+
+        if (Math.abs(center - itemCenter) < 150) {
+            item.classList.add('focused');
+        } else {
+            item.classList.remove('focused');
+        }
+    });
+}
+
+window.addEventListener('scroll', focusOnCenter);
+window.addEventListener('load', focusOnCenter);
+</script>
+
+<audio id="bg-music" loop>
+    <source src="{{ url_for('static', filename='music/seasons.mp3') }}" type="audio/mpeg">
+</audio>
+
+
+<script>
+const bgMusic = document.getElementById("bg-music");
+const toggleBtn = document.getElementById("music-toggle");
+
+bgMusic.volume = 0.4;
+let isPlaying = false;
+
+// Mulai musik saat interaksi pertama
+document.addEventListener("click", () => {
+    if (!isPlaying) {
+        bgMusic.play().catch(() => {});
+        isPlaying = true;
+        toggleBtn.textContent = "🔊 Music On";
+    }
+}, { once: true });
+
+// Tombol toggle
+toggleBtn.addEventListener("click", () => {
+    if (bgMusic.paused) {
+        bgMusic.play();
+        toggleBtn.textContent = "🔊 Music On";
+    } else {
+        bgMusic.pause();
+        toggleBtn.textContent = "🔇 Music Off";
+    }
+});
+</script>
+
+
+<script>
+const bgMusic = document.getElementById("bg-music");
+bgMusic.volume = 0.4;
+
+// Musik mulai setelah interaksi pertama
+document.addEventListener("click", () => {
+    bgMusic.play().catch(() => {});
+}, { once: true });
+
+// Fungsi fade volume
+function fadeVolume(targetVolume, duration = 400) {
+    const stepTime = 50;
+    const steps = duration / stepTime;
+    const volumeStep = (bgMusic.volume - targetVolume) / steps;
+
+    const fade = setInterval(() => {
+        if ((volumeStep > 0 && bgMusic.volume > targetVolume) ||
+            (volumeStep < 0 && bgMusic.volume < targetVolume)) {
+            bgMusic.volume = Math.max(0, Math.min(1, bgMusic.volume - volumeStep));
+        } else {
+            bgMusic.volume = targetVolume;
+            clearInterval(fade);
+        }
+    }, stepTime);
+}
+
+// Ambil semua video di halaman
+const videos = document.querySelectorAll("video");
+
+videos.forEach(video => {
+    video.addEventListener("play", () => {
+        fadeVolume(0.05, 400); // Musik mengecil pelan
+    });
+
+    video.addEventListener("pause", () => {
+        fadeVolume(0.4, 400); // Musik balik normal
+    });
+
+    video.addEventListener("ended", () => {
+        fadeVolume(0.4, 400);
+    });
+});
+</script>
+
+
+
+
+<style>
+@keyframes fall {
+    to {
+        transform: translateY(110vh);
+        opacity: 0;
+    }
+}
+</style>
+
+
+<button id="music-toggle">🔊 Music On</button>
+
+
+
+</body>
+</html>
