@@ -3,6 +3,7 @@ import os
 
 app = Flask(__name__)
 app.secret_key = "ultahjihanrahasia"  # bebas, tapi jangan kasih tau orang
+app.config["SESSION_TYPE"] = "filesystem"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(BASE_DIR, "pesan_jihan.txt")
