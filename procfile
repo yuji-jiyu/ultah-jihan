@@ -1,1 +1,1 @@
-web: gunicorn app-ultah:app
+web: gunicorn app_ultah:app
