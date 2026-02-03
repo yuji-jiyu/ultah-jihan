@@ -1,5 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")  # bebas, tapi jangan kasih tau orang
@@ -9,6 +13,41 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(BASE_DIR, "pesan_jihan.txt")
 
 PASSWORD = "sayang"  # 🔑 GANTI dengan password yang kamu mau
+
+def kirim_email_ke_yusuf(pesan_dari_jihan):
+    import os
+
+    pengirim = os.environ.get("EMAIL_USER1")
+    password = os.environ.get("EMAIL_PASS")
+    penerima = os.environ.get("EMAIL_USER")
+        
+
+    subject = "Pesan Rahasia dari Jihan 🤍"
+
+    isi_email = f"""
+    Jihan baru saja menulis pesan untuk kamu...
+
+    ----------------------------
+
+    {pesan_dari_jihan}
+
+    ----------------------------
+
+    Jangan lupa senyum ya Yusuf :)
+    """
+
+    msg = MIMEMultipart()
+    msg["From"] = pengirim
+    msg["To"] = penerima
+    msg["Subject"] = subject
+    msg.attach(MIMEText(isi_email, "plain"))
+
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(pengirim, password)
+    server.send_message(msg)
+    server.quit()
+
 
 # ================= LOGIN =================
 @app.route("/", methods=["GET", "POST"])
@@ -65,26 +104,6 @@ def gallery():
         return redirect(url_for("login"))
     return render_template("gallery.html")
 
-
-
-@app.route("/page4", methods=["GET", "POST"])
-def page4():
-    if not session.get("login"):
-        return redirect(url_for("login"))
-
-    if request.method == "POST":
-        pesan = request.form.get("pesan")
-        with open(file_path, "a", encoding="utf-8") as file:
-            file.write(pesan + "\n\n")
-    if not os.path.exists(file_path):
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write("")
-
-
-        return redirect(url_for("penutup"))
-
-
-    return render_template("page4.html")
 
 @app.route("/penutup")
 def penutup():
